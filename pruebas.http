@@ -1,0 +1,57 @@
+
+POST http://localhost:8080/api/pacientes
+Content-Type: application/json
+
+{
+  "nombre": "Juan Perez",
+  "telefono": "55551234",
+  "correo": "juan@example.com"
+}
+
+
+### PRUEBA 1 - Registrar tratamiento
+POST http://localhost:8080/api/tratamientos
+Content-Type: application/json
+
+{
+  "nombre": "Limpieza dental",
+  "descripcion": "Limpieza general y preventiva",
+  "precio": 250.00
+}
+
+### PRUEBA 2 - Consultar tratamientos
+GET http://localhost:8080/api/tratamientos
+
+
+### PRUEBA 3 - Registrar cita dental
+POST http://localhost:8080/api/citas
+Content-Type: application/json
+
+{
+  "paciente": "Juan Perez",
+  "fecha": "2026-10-23",
+  "hora": "10:00:00",
+  "tratamiento": {
+    "id": 1
+  },
+  "observaciones": "Primera limpieza dental",
+  "estado": "PROGRAMADA"
+}
+
+### PRUEBA 4 - Consultar citas
+GET http://localhost:8080/api/citas
+
+### PRUEBA 5 - Verificar cruce de horario
+POST http://localhost:8080/api/citas
+Content-Type: application/json
+
+{
+  "paciente": "Maria Lopez",
+  "fecha": "2026-10-23",
+  "hora": "10:00:00",
+  "tratamiento": {
+    "id": 1
+  },
+  "observaciones": "Horario ocupado",
+  "estado": "PROGRAMADA"
+}
