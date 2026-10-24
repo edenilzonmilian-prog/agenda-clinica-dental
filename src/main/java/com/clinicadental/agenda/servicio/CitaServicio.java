@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -27,6 +28,16 @@ public class CitaServicio {
     // Listar todas las citas
     public List<Cita> listar() {
         return citaRepository.findAll();
+    }
+
+    // NUEVO: Consultar citas por fecha
+    public List<Cita> listarPorFecha(LocalDate fecha) {
+        return citaRepository.findByFecha(fecha);
+    }
+
+    // NUEVO: Consultar citas por tratamiento
+    public List<Cita> listarPorTratamiento(Long tratamientoId) {
+        return citaRepository.findByTratamiento_Id(tratamientoId);
     }
 
     // Buscar cita por ID

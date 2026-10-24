@@ -3,9 +3,11 @@ package com.clinicadental.agenda.controlador;
 import com.clinicadental.agenda.modelo.Cita;
 import com.clinicadental.agenda.servicio.CitaServicio;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,24 @@ public class CitaControlador {
     @GetMapping
     public List<Cita> listar() {
         return servicio.listar();
+    }
+
+    // NUEVO: Consultar citas por fecha
+    @GetMapping("/por-fecha")
+    public List<Cita> listarPorFecha(
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate fecha) {
+
+        return servicio.listarPorFecha(fecha);
+    }
+
+    // NUEVO: Consultar citas por tratamiento
+    @GetMapping("/por-tratamiento/{tratamientoId}")
+    public List<Cita> listarPorTratamiento(
+            @PathVariable Long tratamientoId) {
+
+        return servicio.listarPorTratamiento(tratamientoId);
     }
 
     // Consultar cita por ID

@@ -55,3 +55,18 @@ Content-Type: application/json
   "observaciones": "Horario ocupado",
   "estado": "PROGRAMADA"
 }
+
+
+### Prueba - Consultar todas las citas
+GET http://localhost:8080/api/citas
+Accept: application/json
+
+
+### PRUEBA 6 - Consultar citas por fecha
+GET http://localhost:8080/api/citas/por-fecha?fecha=2026-10-23
+Accept: application/json
+
+
+### PRUEBA 7 - Consultar citas por tratamiento
+GET http://localhost:8080/api/citas/por-tratamiento/1
+Accept: application/json
