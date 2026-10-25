@@ -25,22 +25,22 @@ public class CitaServicio {
         this.tratamientoRepository = tratamientoRepository;
     }
 
-    // Listar todas las citas
     public List<Cita> listar() {
         return citaRepository.findAll();
     }
 
-    // NUEVO: Consultar citas por fecha
     public List<Cita> listarPorFecha(LocalDate fecha) {
         return citaRepository.findByFecha(fecha);
     }
 
-    // NUEVO: Consultar citas por tratamiento
     public List<Cita> listarPorTratamiento(Long tratamientoId) {
         return citaRepository.findByTratamiento_Id(tratamientoId);
     }
 
-    // Buscar cita por ID
+    public List<Cita> listarPendientes() {
+        return citaRepository.findByEstadoOrderByFechaAscHoraAsc("PROGRAMADA");
+    }
+
     public Cita buscarPorId(Long id) {
         return citaRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
@@ -49,7 +49,6 @@ public class CitaServicio {
                 ));
     }
 
-    // Registrar una cita
     public Cita guardar(Cita cita) {
         validar(cita, null);
 
@@ -68,7 +67,6 @@ public class CitaServicio {
         return citaRepository.save(cita);
     }
 
-    // Actualizar cita
     public Cita actualizar(Long id, Cita datos) {
         Cita actual = buscarPorId(id);
 
@@ -93,13 +91,11 @@ public class CitaServicio {
         return citaRepository.save(actual);
     }
 
-    // Eliminar cita
     public void eliminar(Long id) {
         Cita cita = buscarPorId(id);
         citaRepository.delete(cita);
     }
 
-    // Validar datos y evitar citas simultaneas
     private void validar(Cita cita, Long idActual) {
 
         if (cita == null ||
@@ -129,7 +125,6 @@ public class CitaServicio {
             );
         }
 
-        // Una cita cancelada no ocupa horario
         if (cita.getEstado().equals("CANCELADA")) {
             return;
         }

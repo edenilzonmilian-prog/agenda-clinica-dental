@@ -20,13 +20,11 @@ public class CitaControlador {
         this.servicio = servicio;
     }
 
-    // Consultar todas las citas
     @GetMapping
     public List<Cita> listar() {
         return servicio.listar();
     }
 
-    // NUEVO: Consultar citas por fecha
     @GetMapping("/por-fecha")
     public List<Cita> listarPorFecha(
             @RequestParam
@@ -36,7 +34,6 @@ public class CitaControlador {
         return servicio.listarPorFecha(fecha);
     }
 
-    // NUEVO: Consultar citas por tratamiento
     @GetMapping("/por-tratamiento/{tratamientoId}")
     public List<Cita> listarPorTratamiento(
             @PathVariable Long tratamientoId) {
@@ -44,20 +41,22 @@ public class CitaControlador {
         return servicio.listarPorTratamiento(tratamientoId);
     }
 
-    // Consultar cita por ID
+    @GetMapping("/pendientes")
+    public List<Cita> listarPendientes() {
+        return servicio.listarPendientes();
+    }
+
     @GetMapping("/{id}")
     public Cita buscar(@PathVariable Long id) {
         return servicio.buscarPorId(id);
     }
 
-    // Registrar nueva cita
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Cita guardar(@RequestBody Cita cita) {
         return servicio.guardar(cita);
     }
 
-    // Modificar cita existente
     @PutMapping("/{id}")
     public Cita actualizar(
             @PathVariable Long id,
@@ -66,7 +65,6 @@ public class CitaControlador {
         return servicio.actualizar(id, cita);
     }
 
-    // Eliminar cita
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void eliminar(@PathVariable Long id) {

@@ -18,4 +18,6 @@ public interface CitaRepository
     // Consultar citas por tratamiento
     List<Cita> findByTratamiento_Id(Long tratamientoId);
 
+    List<Cita> findByEstadoOrderByFechaAscHoraAsc(String estado);
+
 }

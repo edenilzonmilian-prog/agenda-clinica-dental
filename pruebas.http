@@ -70,3 +70,7 @@ Accept: application/json
 ### PRUEBA 7 - Consultar citas por tratamiento
 GET http://localhost:8080/api/citas/por-tratamiento/1
 Accept: application/json
+
+###
+GET http://localhost:8080/api/citas/pendientes
+Accept: application/json
