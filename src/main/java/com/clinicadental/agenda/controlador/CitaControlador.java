@@ -2,11 +2,11 @@ package com.clinicadental.agenda.controlador;
 
 import com.clinicadental.agenda.modelo.Cita;
 import com.clinicadental.agenda.servicio.CitaServicio;
-
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -30,20 +30,23 @@ public class CitaControlador {
             @RequestParam
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate fecha) {
-
         return servicio.listarPorFecha(fecha);
     }
 
     @GetMapping("/por-tratamiento/{tratamientoId}")
     public List<Cita> listarPorTratamiento(
             @PathVariable Long tratamientoId) {
-
         return servicio.listarPorTratamiento(tratamientoId);
     }
 
     @GetMapping("/pendientes")
     public List<Cita> listarPendientes() {
         return servicio.listarPendientes();
+    }
+
+    @GetMapping("/total-estimado")
+    public BigDecimal calcularTotalEstimado() {
+        return servicio.calcularTotalEstimadoProgramadas();
     }
 
     @GetMapping("/{id}")
@@ -61,7 +64,6 @@ public class CitaControlador {
     public Cita actualizar(
             @PathVariable Long id,
             @RequestBody Cita cita) {
-
         return servicio.actualizar(id, cita);
     }
 

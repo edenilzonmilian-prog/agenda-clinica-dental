@@ -29,8 +29,8 @@ Content-Type: application/json
 
 {
   "paciente": "Juan Perez",
-  "fecha": "2026-10-23",
-  "hora": "10:00:00",
+  "fecha": "2026-11-05",
+  "hora": "11:30:00",
   "tratamiento": {
     "id": 1
   },
@@ -47,8 +47,8 @@ Content-Type: application/json
 
 {
   "paciente": "Maria Lopez",
-  "fecha": "2026-10-23",
-  "hora": "10:00:00",
+  "fecha": "2026-11-05",
+  "hora": "11:30:00",
   "tratamiento": {
     "id": 1
   },
@@ -73,4 +73,8 @@ Accept: application/json
 
 ###
 GET http://localhost:8080/api/citas/pendientes
+Accept: application/json
+
+### PRUEBA 8 - Total estimado
+GET http://localhost:8080/api/citas/total-estimado
 Accept: application/json

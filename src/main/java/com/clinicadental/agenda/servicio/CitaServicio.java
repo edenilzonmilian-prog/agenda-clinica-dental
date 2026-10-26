@@ -1,14 +1,15 @@
+
 package com.clinicadental.agenda.servicio;
 
 import com.clinicadental.agenda.modelo.Cita;
 import com.clinicadental.agenda.modelo.Tratamiento;
 import com.clinicadental.agenda.repositorio.CitaRepository;
 import com.clinicadental.agenda.repositorio.TratamientoRepository;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -39,6 +40,11 @@ public class CitaServicio {
 
     public List<Cita> listarPendientes() {
         return citaRepository.findByEstadoOrderByFechaAscHoraAsc("PROGRAMADA");
+    }
+
+    public BigDecimal calcularTotalEstimadoProgramadas() {
+        BigDecimal total = citaRepository.calcularTotalEstimadoProgramadas();
+        return total == null ? BigDecimal.ZERO : total;
     }
 
     public Cita buscarPorId(Long id) {
@@ -129,17 +135,22 @@ public class CitaServicio {
             return;
         }
 
-        boolean ocupada = citaRepository.findAll()
-                .stream()
-                .anyMatch(existente ->
-                        (idActual == null ||
-                                !existente.getId().equals(idActual)) &&
+        boolean ocupada;
 
-                                existente.getFecha().equals(cita.getFecha()) &&
-                                existente.getHora().equals(cita.getHora()) &&
-
-                                !existente.getEstado().equals("CANCELADA")
-                );
+        if (idActual == null) {
+            ocupada = citaRepository.existsByFechaAndHoraAndEstadoNot(
+                    cita.getFecha(),
+                    cita.getHora(),
+                    "CANCELADA"
+            );
+        } else {
+            ocupada = citaRepository.existsByFechaAndHoraAndEstadoNotAndIdNot(
+                    cita.getFecha(),
+                    cita.getHora(),
+                    "CANCELADA",
+                    idActual
+            );
+        }
 
         if (ocupada) {
             throw new ResponseStatusException(
