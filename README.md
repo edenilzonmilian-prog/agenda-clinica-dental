@@ -8,77 +8,65 @@
 - **Estudiante:** Hans Douglas Edenilzon Alvarado Milian
 - **Carné:** 9941-25-17016
 - **Proyecto asignado:** PF-12 — Agenda de Clínica Dental
-- **Entrega:** Primer avance
+- **Etapa actual:** Segundo avance
 
 ## 1. Descripción del proyecto
 
-En este proyecto estoy desarrollando una agenda para una clínica dental utilizando Java, Spring Boot y PostgreSQL.
+En este proyecto estoy desarrollando una agenda para una clínica dental utilizando Java, Spring Boot y PostgreSQL 
+para poder llevar un control de los tratamientos y las citas de los pacientes, permitiendo registrar la información, consultarla y realizar cambios cuando sea necesario.
 
-La idea principal es llevar un control de los tratamientos y las citas de los pacientes, permitiendo registrar la información, consultarla y realizar cambios cuando sea necesario.
-
-Una de las funciones importantes del sistema es evitar que se registren dos citas activas en la misma fecha y hora, para mantener una mejor organización de las atenciones.
+Una de las funciones principales es evitar que se registren dos citas activas en la misma fecha y hora así como también se pueden consultar las citas según su fecha, tratamiento o estado.
 
 ## 2. Objetivo
 
-Desarrollar una aplicación que permita administrar los tratamientos y las citas dentales mediante una API REST, utilizando una base de datos PostgreSQL para guardar la información.
-
-El sistema debe permitir organizar las citas, relacionarlas con tratamientos y aplicar las reglas necesarias para evitar conflictos de horarios.
+Desarrollar una aplicación que permita administrar los tratamientos y las citas dentales mediante una API REST, utilizando PostgreSQL para almacenar la información.
+El sistema debe permitir organizar las citas, relacionarlas con tratamientos, controlar sus estados y evitar conflictos de horarios.
 
 ## 3. Tecnologías utilizadas
 
 Para desarrollar el proyecto utilicé las siguientes herramientas:
 
 - **Java:** lenguaje de programación utilizado para desarrollar el backend.
-- **Spring Boot:** framework utilizado para crear la aplicación y los endpoints REST.
-- **Maven:** herramienta para administrar las dependencias del proyecto.
-- **PostgreSQL:** base de datos utilizada para almacenar la información.
-- **Spring Data JPA:** permite realizar las operaciones con la base de datos mediante repositorios.
-- **Hibernate:** se encarga del mapeo de las entidades Java a las tablas de PostgreSQL.
-- **IntelliJ IDEA:** entorno de desarrollo utilizado para programar y realizar las pruebas.
-- **Git y GitHub:** herramientas utilizadas para llevar el control de versiones y almacenar el proyecto.
+- **Spring Boot:** utilizado para crear la aplicación y los endpoints REST.
+- **Maven:** administra las dependencias del proyecto.
+- **PostgreSQL:** base de datos donde se almacena la información.
+- **Spring Data JPA:** permite realizar operaciones con la base de datos mediante repositorios.
+- **Hibernate:** permite relacionar las entidades Java con las tablas de PostgreSQL.
+- **IntelliJ IDEA:** entorno donde desarrollé el proyecto y realicé las pruebas.
+- **Git y GitHub:** utilizados para registrar los cambios y guardar el proyecto.
 
-## 4. Desarrollo del primer avance
+## 4. Desarrollo del proyecto
 
-Durante este primer avance trabajé principalmente en la creación del proyecto, su estructura y la conexión con PostgreSQL.
+### Primer avance
 
-Primero configuré Spring Boot y Maven. Después creé las entidades necesarias para representar la información de pacientes, tratamientos y citas.
+Durante el primer avance trabajé en la estructura inicial del proyecto y en la conexión con PostgreSQL creando las entidades Paciente, Tratamiento y Cita, junto con sus repositorios,
+servicios y controladores. También implementé las operaciones principales para registrar, consultar, actualizar y eliminar tratamientos y citas.
+Una de las primeras validaciones fue impedir que dos citas activas utilizaran la misma fecha y hora.
 
-También implementé los repositorios, servicios y controladores para realizar las primeras operaciones mediante una API REST.
+### Segundo avance
 
-Las principales funcionalidades desarrolladas son:
+Para este avance tomé en cuenta las observaciones realizadas por el ingeniero mejorando la validación de horarios para consultar directamente el repositorio,
+sin tener que recorrer todas las citas registradas, para luego implementar las consultas por fecha y tratamiento, la agenda de citas pendientes y el cálculo del total
+estimado de tratamientos programados. También incorporé reglas para controlar los cambios de estado de las citas y evitar que se modifiquen citas que
+ya fueron atendidas o canceladas.
 
-**Pacientes**
-- Registrar información de pacientes.
-- Consultar los pacientes registrados.
-
-**Tratamientos**
-- Registrar nuevos tratamientos.
-- Consultar los tratamientos almacenados.
-- Buscar tratamientos por su identificador.
-- Actualizar y eliminar tratamientos mediante los métodos implementados.
-
-**Citas dentales**
-- Registrar nuevas citas.
-- Consultar las citas almacenadas.
-- Relacionar cada cita con un tratamiento.
-- Registrar el estado de cada cita.
-- Validar que no exista otra cita activa en la misma fecha y hora.
-- Actualizar y eliminar citas mediante los métodos implementados.
-
-Las operaciones de actualización y eliminación se encuentran programadas, pero todavía no se han incluido en las pruebas funcionales documentadas de este avance.
+Otra de las correcciones fue implementar las clases `CitaDTO` y `TratamientoDTO`, con el objetivo de controlar los datos enviados y recibidos por la API, terminando con las validaciones para los
+campos obligatorios y un manejador centralizado de excepciones, que permite devolver mensajes más claros cuando ocurre algún error.
 
 ## 5. Organización del proyecto
 
-El backend está dividido en paquetes para mantener el código organizado.
+El proyecto está organizado en paquetes para separar las diferentes partes del backend.
 
 | Paquete | Función |
 |---|---|
-| modelo | Contiene las clases que representan las entidades. |
-| repositorio | Permite realizar operaciones con PostgreSQL mediante JPA. |
-| servicio | Contiene las operaciones y validaciones básicas. |
-| controlador | Recibe las solicitudes HTTP y devuelve las respuestas. |
+| modelo | Contiene las entidades del sistema. |
+| repositorio | Permite consultar y guardar información en PostgreSQL. |
+| servicio | Contiene las operaciones y reglas de negocio. |
+| controlador | Recibe las solicitudes HTTP. |
+| dto | Controla los datos que recibe y devuelve la API. |
+| exception | Contiene el manejo centralizado de excepciones. |
 
-Esta organización permite separar las responsabilidades y facilita realizar modificaciones al sistema durante los siguientes avances.
+Esta estructura permite mantener el código organizado y facilita realizar modificaciones.
 
 ## 6. Entidades y relación
 
@@ -107,125 +95,159 @@ Sus atributos son:
 - observaciones
 - estado
 
+Los estados utilizados son `PROGRAMADA`, `ATENDIDA` y `CANCELADA`.
+
 ### Paciente
 
-Es una entidad auxiliar utilizada para registrar y consultar información de pacientes.
+Es una entidad auxiliar que permite registrar y consultar información de los pacientes.
 
-### Relación entre las entidades principales
+### Relación entre las entidades
 
-Un tratamiento puede estar relacionado con varias citas, mientras que cada cita corresponde a un tratamiento específico.
+Un tratamiento puede estar relacionado con varias citas, pero cada cita corresponde a un tratamiento específico.
 
-Esta relación se implementó mediante las anotaciones `@ManyToOne` y `@JoinColumn`.
+La relación está implementada mediante `@ManyToOne` y `@JoinColumn`.
 
-Por el momento, la clase Cita almacena el nombre del paciente como texto, por lo que todavía no existe una relación JPA directa entre Cita y Paciente.
+Actualmente, la entidad Cita almacena el nombre del paciente como texto, por lo que no existe una relación JPA directa entre Cita y Paciente.
 
 ## 7. Base de datos
 
-Para almacenar la información se utiliza PostgreSQL.
-
-La base de datos local se llama:
-
+Para almacenar la información utilizo PostgreSQL y la base de datos principal se llama:
 `agenda_clinica_dental`
 
-La conexión está configurada en el archivo `application.properties`, utilizando el puerto 5432 de PostgreSQL.
+La conexión se encuentra configurada en `application.properties`, utilizando el puerto 5432 y la variable de entorno `DB_PASSWORD` para la contraseña.
 
-La contraseña se obtiene mediante la variable de entorno `DB_PASSWORD`, evitando escribirla directamente en el código fuente.
+Durante este avance también preparé dos archivos SQL:
 
-Durante el desarrollo comprobé que los registros permanecen guardados después de detener y volver a ejecutar Spring Boot.
+- `sql/01_estructura.sql`: contiene las instrucciones para crear las tablas.
+- `sql/02_datos_prueba.sql`: contiene los registros utilizados para comprobar la base de datos.
+
+Para realizar las pruebas creé una base independiente llamada:
+
+`agenda_clinica_dental_prueba`
+
+En ella comprobé la creación de las tres tablas y la inserción de 4 tratamientos y 10 citas dentales.
+
+Estas pruebas se realizaron sin modificar los registros de la base principal.
 
 ## 8. Instrucciones para ejecutar el proyecto
 
-Para ejecutar la aplicación se necesita tener instalado Java, PostgreSQL y un entorno compatible con proyectos Maven.
-
-Los pasos son:
-
 1. Descargar o clonar el repositorio.
-2. Abrir la carpeta del proyecto en IntelliJ IDEA.
+2. Abrir el proyecto en IntelliJ IDEA.
 3. Esperar a que Maven cargue las dependencias.
-4. Crear una base de datos PostgreSQL llamada `agenda_clinica_dental`.
-5. Configurar la conexión local de PostgreSQL y la variable de entorno `DB_PASSWORD`.
+4. Crear la base de datos PostgreSQL `agenda_clinica_dental`.
+5. Configurar la conexión y la variable `DB_PASSWORD`.
 6. Ejecutar la clase `AgendaClinicaDentalApplication`.
 7. Esperar a que Spring Boot inicie correctamente.
 
 La aplicación utiliza el puerto 8080.
 
-Dirección base de la API:
+Dirección base:
 
 `http://localhost:8080`
 
 ## 9. Endpoints principales
 
-Los siguientes endpoints están implementados en el proyecto:
+### Pacientes
 
 | Método | Endpoint | Función |
 |---|---|---|
 | POST | /api/pacientes | Registrar paciente |
 | GET | /api/pacientes | Consultar pacientes |
+
+### Tratamientos
+
+| Método | Endpoint | Función |
+|---|---|---|
 | POST | /api/tratamientos | Registrar tratamiento |
 | GET | /api/tratamientos | Consultar tratamientos |
 | GET | /api/tratamientos/{id} | Buscar tratamiento |
 | PUT | /api/tratamientos/{id} | Actualizar tratamiento |
 | DELETE | /api/tratamientos/{id} | Eliminar tratamiento |
+
+### Citas
+
+| Método | Endpoint | Función |
+|---|---|---|
 | POST | /api/citas | Registrar cita |
 | GET | /api/citas | Consultar citas |
 | GET | /api/citas/{id} | Buscar cita |
 | PUT | /api/citas/{id} | Actualizar cita |
 | DELETE | /api/citas/{id} | Eliminar cita |
+| GET | /api/citas/por-fecha?fecha=AAAA-MM-DD | Consultar por fecha |
+| GET | /api/citas/por-tratamiento/{id} | Consultar por tratamiento |
+| GET | /api/citas/pendientes | Consultar agenda pendiente |
+| GET | /api/citas/total-estimado | Calcular total estimado |
 
 ## 10. Pruebas realizadas
 
-Para comprobar el funcionamiento del sistema utilicé el archivo `pruebas.http` de IntelliJ IDEA.
+Para comprobar el funcionamiento del backend utilicé el archivo `pruebas.http` de IntelliJ IDEA.
 
-Realicé solicitudes HTTP para registrar y consultar tratamientos y citas.
+Durante el primer avance realicé las pruebas básicas de registro y consulta.
+
+En el segundo avance agregué nuevas solicitudes para comprobar las consultas, los cambios de estado, las validaciones y el manejo de errores.
+
+Entre los resultados obtenidos se encuentran:
 
 | Prueba | Resultado |
 |---|---|
-| Registrar un tratamiento | 201 Created |
+| Registrar tratamiento | 201 Created |
 | Consultar tratamientos | 200 OK |
-| Registrar una cita dental | 201 Created |
+| Registrar cita dental | 201 Created |
 | Consultar citas | 200 OK |
-| Intentar registrar otra cita en un horario ocupado | 409 Conflict |
-| Consultar citas después de reiniciar la aplicación | 200 OK |
+| Registrar una cita en horario ocupado | 409 Conflict |
+| Consultar total estimado | 200 OK |
+| Actualizar una cita | 200 OK |
+| Registrar una cita utilizando DTO | 201 Created |
+| Actualizar una cita utilizando DTO | 200 OK |
+| Enviar datos obligatorios incorrectos | 400 Bad Request |
+| Buscar una cita inexistente | 404 Not Found |
+| Intentar modificar una cita atendida | 409 Conflict |
 
-Una de las pruebas más importantes fue intentar registrar dos citas activas en la misma fecha y hora.
+También comprobé que el sistema devuelve mensajes de error más comprensibles gracias al manejo centralizado de excepciones.
 
-El sistema rechazó la segunda solicitud y devolvió el código HTTP 409, lo cual permitió comprobar que la validación básica de horarios funciona en ese caso.
+### Pruebas SQL
 
-También comprobé que la cita registrada mantenía su información y su tratamiento relacionado después de reiniciar Spring Boot.
+Para comprobar los scripts SQL utilicé una base de datos independiente.
+
+Los resultados fueron:
+
+- Creación correcta de 3 tablas.
+- Inserción correcta de 4 tratamientos.
+- Inserción correcta de 10 citas.
+- Consultas SQL ejecutadas sin errores.
+
+De esta manera pude comprobar que los scripts de estructura y datos de prueba funcionan correctamente.
 
 ## 11. Estado actual del proyecto
 
-Actualmente se cuenta con una aplicación Spring Boot conectada a PostgreSQL, con las entidades principales creadas y operaciones básicas que ya fueron probadas.
+Actualmente el proyecto cuenta con un backend desarrollado en Spring Boot y conectado a PostgreSQL y las operaciones principales de tratamientos o citas están implementadas con las consultas específicas del PF-12.
 
-El primer avance se concentra en demostrar que la conexión con la base de datos funciona, que los registros pueden almacenarse y consultarse, y que las citas están relacionadas con sus respectivos tratamientos.
+También se incorporaron los DTO, las validaciones de datos, las reglas de cambios de estado y el manejo centralizado de excepciones.
 
-## 12. Próximos avances
+Además, se prepararon y probaron los scripts SQL solicitados.
 
-En los siguientes avances se continuará trabajando en:
+El proyecto todavía se encuentra en desarrollo, ya que falta completar la interfaz y realizar las pruebas finales de integración.
 
-- Incorporar DTO para recibir y devolver información.
-- Mejorar las validaciones y el manejo de excepciones.
-- Implementar consultas por fecha y tratamiento.
-- Mostrar las citas pendientes.
-- Calcular el total estimado de tratamientos programados.
-- Reforzar las reglas de negocio.
-- Desarrollar una interfaz utilizando HTML, CSS y JavaScript.
-- Completar las pruebas y la documentación del sistema.
+## 12. Trabajo pendiente
+
+Para la entrega final tengo previsto trabajar en:
+
+- Desarrollar la interfaz utilizando HTML, CSS y JavaScript.
+- Conectar la interfaz con los endpoints del backend.
+- Realizar las pruebas finales del funcionamiento completo.
+- Completar las últimas evidencias y la documentación de entrega.
+
+La intención es aprovechar el backend que ya está desarrollado y continuar con lo que falta sin agregar funcionalidades fuera de los requisitos del PF-12.
 
 ## 13. Control de versiones
 
-El proyecto utiliza Git y GitHub para registrar los cambios realizados durante su desarrollo.
+Para llevar el control del desarrollo utilizo Git y GitHub registré los commits correspondientes a las consultas, la optimización de horarios, las reglas de cambios de estado, los DTO, el manejo de excepciones y los scripts SQL.
+Esto permite identificar los cambios realizados durante cada etapa del proyecto.
 
-Se utilizará el mismo repositorio para el primer avance, segundo avance y entrega final.
+## 14. Conclusión del segundo avance
 
-Cada etapa tendrá sus respectivos commits, con el objetivo de mantener un historial de los cambios y mejoras realizadas.
-
-## 14. Conclusión del primer avance
-
-Durante este primer avance logré establecer la estructura inicial del sistema y conectar la aplicación con PostgreSQL.
-
-También pude comprobar el funcionamiento de las primeras operaciones de tratamientos y citas mediante solicitudes HTTP.
-
-Una parte importante fue verificar que las citas quedaran relacionadas con los tratamientos y que el sistema rechazara una segunda cita activa cuando el horario ya estaba ocupado.
-
-Con estas funcionalidades se cuenta con una base para continuar desarrollando las demás características del proyecto.
+Durante este segundo avance pude mejorar varias partes del sistema a partir de las observaciones del ingeniero David Alvarez.
+Uno de los cambios más importantes fue mejorar la validación de horarios e implementar las consultas necesarias para organizar las citas dentales, aprendí a utilizar DTO para controlar la información de la API y a manejar las excepciones
+para que el sistema devuelva mensajes más comprensibles.
+Otra parte importante fue trabajar directamente con PostgreSQL, creando los scripts SQL y comprobando los registros en una base de pruebas independiente y aunque
+todavía quedan algunas partes por desarrollar, principalmente la interfaz y las pruebas finales; considero enviar un tercer avance con el código terminado para luego subirlo al portal de canvas.
