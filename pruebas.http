@@ -126,3 +126,7 @@ Content-Type: application/json
   "observaciones": "Prueba de validacion",
   "estado": "PROGRAMADA"
 }
+
+### PRUEBA 13 - Cita no encontrada
+GET http://localhost:8080/api/citas/99999
+Accept: application/json
