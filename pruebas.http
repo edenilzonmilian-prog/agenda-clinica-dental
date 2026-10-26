@@ -31,9 +31,7 @@ Content-Type: application/json
   "paciente": "Juan Perez",
   "fecha": "2026-11-05",
   "hora": "11:30:00",
-  "tratamiento": {
-    "id": 1
-  },
+  "tratamientoId": 1,
   "observaciones": "Primera limpieza dental",
   "estado": "PROGRAMADA"
 }
@@ -49,9 +47,7 @@ Content-Type: application/json
   "paciente": "Maria Lopez",
   "fecha": "2026-11-05",
   "hora": "11:30:00",
-  "tratamiento": {
-    "id": 1
-  },
+  "tratamientoId": 1,
   "observaciones": "Horario ocupado",
   "estado": "PROGRAMADA"
 }
@@ -87,9 +83,46 @@ Content-Type: application/json
   "paciente": "Juan Perez",
   "fecha": "2026-11-05",
   "hora": "11:30:00",
-  "tratamiento": {
-    "id": 1
-  },
+  "tratamientoId": 1,
   "observaciones": "Primera limpieza dental",
   "estado": "ATENDIDA"
+}
+
+### PRUEBA 10 - Registrar cita con DTO
+POST http://localhost:8080/api/citas
+Content-Type: application/json
+
+{
+  "paciente": "Maria Lopez",
+  "fecha": "2026-11-06",
+  "hora": "09:00:00",
+  "tratamientoId": 1,
+  "observaciones": "Limpieza dental",
+  "estado": "PROGRAMADA"
+}
+
+### PRUEBA 11 - Actualizar cita con DTO
+PUT http://localhost:8080/api/citas/3
+Content-Type: application/json
+
+{
+  "paciente": "Maria Lopez",
+  "fecha": "2026-11-06",
+  "hora": "09:00:00",
+  "tratamientoId": 1,
+  "observaciones": "Limpieza dental confirmada",
+  "estado": "PROGRAMADA"
+}
+
+### PRUEBA 12 - Validar datos obligatorios
+POST http://localhost:8080/api/citas
+Content-Type: application/json
+
+{
+  "paciente": "",
+  "fecha": "2026-11-07",
+  "hora": "09:00:00",
+  "tratamientoId": 1,
+  "observaciones": "Prueba de validacion",
+  "estado": "PROGRAMADA"
 }
