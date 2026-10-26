@@ -78,3 +78,18 @@ Accept: application/json
 ### PRUEBA 8 - Total estimado
 GET http://localhost:8080/api/citas/total-estimado
 Accept: application/json
+
+### PRUEBA 9 - Cambiar estado de cita
+PUT http://localhost:8080/api/citas/2
+Content-Type: application/json
+
+{
+  "paciente": "Juan Perez",
+  "fecha": "2026-11-05",
+  "hora": "11:30:00",
+  "tratamiento": {
+    "id": 1
+  },
+  "observaciones": "Primera limpieza dental",
+  "estado": "ATENDIDA"
+}

@@ -1,4 +1,3 @@
-
 package com.clinicadental.agenda.servicio;
 
 import com.clinicadental.agenda.modelo.Cita;
@@ -58,6 +57,13 @@ public class CitaServicio {
     public Cita guardar(Cita cita) {
         validar(cita, null);
 
+        if (!cita.getEstado().equals("PROGRAMADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Una cita nueva debe estar PROGRAMADA"
+            );
+        }
+
         Long tratamientoId = cita.getTratamiento().getId();
 
         Tratamiento tratamiento = tratamientoRepository
@@ -75,6 +81,13 @@ public class CitaServicio {
 
     public Cita actualizar(Long id, Cita datos) {
         Cita actual = buscarPorId(id);
+
+        if (!actual.getEstado().equals("PROGRAMADA")) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se puede modificar una cita atendida o cancelada"
+            );
+        }
 
         validar(datos, id);
 
