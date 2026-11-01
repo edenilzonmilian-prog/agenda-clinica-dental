@@ -17,6 +17,8 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
     List<Cita> findByTratamiento_Id(Long tratamientoId);
 
+    boolean existsByTratamiento_Id(Long tratamientoId);
+
     List<Cita> findByEstadoOrderByFechaAscHoraAsc(String estado);
 
     @Query("SELECT SUM(c.tratamiento.precio) FROM Cita c WHERE c.estado = 'PROGRAMADA'")

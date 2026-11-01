@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda de Clínica Dental</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+</head>
+<body>
+
+<header>
+    <h1>Agenda de Clínica Dental</h1>
+    <p>Administración de tratamientos y citas dentales</p>
+</header>
+
+<main>
+    <div id="mensaje" role="alert" hidden></div>
+
+    <section class="resumen">
+        <h2>Resumen de la clínica</h2>
+        <div class="indicador">
+            <h3>Total estimado de tratamientos programados</h3>
+            <p id="total-estimado">Q0.00</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>Administrar tratamientos</h2>
+
+        <form id="tratamiento-form">
+            <input type="hidden" id="tratamiento-id">
+
+            <label for="tratamiento-nombre">
+                Nombre del tratamiento
+            </label>
+            <input type="text" id="tratamiento-nombre"
+                   required maxlength="100">
+
+            <label for="tratamiento-descripcion">
+                Descripción
+            </label>
+            <textarea id="tratamiento-descripcion"></textarea>
+
+            <label for="tratamiento-precio">
+                Precio (Q)
+            </label>
+            <input type="number" id="tratamiento-precio"
+                   min="0.01" step="0.01" required>
+
+            <button type="submit" id="guardar-tratamiento">
+                Guardar tratamiento
+            </button>
+
+            <button type="button" id="cancelar-tratamiento" hidden>
+                Cancelar edición
+            </button>
+        </form>
+
+        <h3>Tratamientos disponibles</h3>
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Precio</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="tabla-tratamientos"></tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2>Registrar y modificar citas</h2>
+
+        <form id="cita-form">
+            <input type="hidden" id="cita-id">
+
+            <label for="cita-paciente">
+                Nombre del paciente
+            </label>
+            <input type="text" id="cita-paciente" required>
+
+            <label for="cita-fecha">
+                Fecha de la cita
+            </label>
+            <input type="date" id="cita-fecha" required>
+
+            <label for="cita-hora">
+                Hora de la cita
+            </label>
+            <input type="time" id="cita-hora" required>
+
+            <label for="cita-tratamiento">
+                Tratamiento
+            </label>
+            <select id="cita-tratamiento" required>
+                <option value="">Seleccione un tratamiento</option>
+            </select>
+
+            <label for="cita-observaciones">
+                Observaciones
+            </label>
+            <textarea id="cita-observaciones"></textarea>
+
+            <button type="submit" id="guardar-cita">
+                Guardar cita
+            </button>
+
+            <button type="button" id="cancelar-cita" hidden>
+                Cancelar edición
+            </button>
+        </form>
+    </section>
+
+    <section>
+        <h2>Agenda de citas</h2>
+        <p>Consulta las citas y sus horarios registrados.</p>
+
+        <div class="filtros">
+            <button type="button" id="btn-todas">
+                Todas las citas
+            </button>
+
+            <button type="button" id="btn-pendientes">
+                Agenda pendiente
+            </button>
+
+            <label for="filtro-fecha">Buscar por fecha</label>
+            <input type="date" id="filtro-fecha">
+
+            <button type="button" id="btn-fecha">
+                Filtrar fecha
+            </button>
+
+            <label for="filtro-tratamiento">
+                Buscar por tratamiento
+            </label>
+            <select id="filtro-tratamiento">
+                <option value="">Todos los tratamientos</option>
+            </select>
+
+            <button type="button" id="btn-tratamiento">
+                Filtrar tratamiento
+            </button>
+        </div>
+
+        <div class="tabla-contenedor">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Paciente</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Tratamiento</th>
+                    <th>Estado</th>
+                    <th>Observaciones</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody id="tabla-citas"></tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer>
+    <p>PF-12 | Agenda de Clínica Dental</p>
+    <p>Universidad Mariano Gálvez de Guatemala</p>
+</footer>
+
+</body>
+</html>

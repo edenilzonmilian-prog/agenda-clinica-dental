@@ -130,3 +130,32 @@ Content-Type: application/json
 ### PRUEBA 13 - Cita no encontrada
 GET http://localhost:8080/api/citas/99999
 Accept: application/json
+
+###
+PATCH http://localhost:8080/api/citas/10/estado
+Content-Type: application/json
+
+{
+  "estado": "PENDIENTE"
+}
+
+###
+PATCH http://localhost:8080/api/citas/5/estado
+Content-Type: application/json
+
+{
+  "estado": "CANCELADA"
+}
+
+###
+PUT http://localhost:8080/api/citas/5
+Content-Type: application/json
+
+{
+  "paciente": "Leon Scott Kennedy",
+  "fecha": "2026-11-01",
+  "hora": "14:00:00",
+  "tratamientoId": 1,
+  "observaciones": "Intento de modificar cita atendida",
+  "estado": "PROGRAMADA"
+}

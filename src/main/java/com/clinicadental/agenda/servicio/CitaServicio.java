@@ -6,6 +6,7 @@ import com.clinicadental.agenda.repositorio.CitaRepository;
 import com.clinicadental.agenda.repositorio.TratamientoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ public class CitaServicio {
     }
 
     public List<Cita> listarPorTratamiento(Long tratamientoId) {
+        buscarTratamiento(tratamientoId);
         return citaRepository.findByTratamiento_Id(tratamientoId);
     }
 
@@ -54,100 +56,112 @@ public class CitaServicio {
                 ));
     }
 
+    @Transactional
     public Cita guardar(Cita cita) {
-        validar(cita, null);
-
-        if (!cita.getEstado().equals("PROGRAMADA")) {
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Una cita nueva debe estar PROGRAMADA"
-            );
-        }
-
-        Long tratamientoId = cita.getTratamiento().getId();
-
-        Tratamiento tratamiento = tratamientoRepository
-                .findById(tratamientoId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Tratamiento no encontrado"
-                ));
+        validarDatos(cita);
+        validarEstadoProgramado(cita.getEstado());
+        validarHorario(cita, null);
 
         cita.setId(null);
-        cita.setTratamiento(tratamiento);
+        cita.setPaciente(cita.getPaciente().trim());
+        cita.setTratamiento(
+                buscarTratamiento(cita.getTratamiento().getId())
+        );
 
         return citaRepository.save(cita);
     }
 
+    @Transactional
     public Cita actualizar(Long id, Cita datos) {
         Cita actual = buscarPorId(id);
 
-        if (!actual.getEstado().equals("PROGRAMADA")) {
-            throw new ResponseStatusException(
-                    HttpStatus.CONFLICT,
-                    "No se puede modificar una cita atendida o cancelada"
-            );
-        }
+        validarCitaModificable(actual);
+        validarDatos(datos);
+        validarEstadoProgramado(datos.getEstado());
+        validarHorario(datos, id);
 
-        validar(datos, id);
-
-        Long tratamientoId = datos.getTratamiento().getId();
-
-        Tratamiento tratamiento = tratamientoRepository
-                .findById(tratamientoId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Tratamiento no encontrado"
-                ));
-
-        actual.setPaciente(datos.getPaciente());
+        actual.setPaciente(datos.getPaciente().trim());
         actual.setFecha(datos.getFecha());
         actual.setHora(datos.getHora());
-        actual.setTratamiento(tratamiento);
+        actual.setTratamiento(
+                buscarTratamiento(datos.getTratamiento().getId())
+        );
         actual.setObservaciones(datos.getObservaciones());
-        actual.setEstado(datos.getEstado());
 
         return citaRepository.save(actual);
     }
 
-    public void eliminar(Long id) {
+    @Transactional
+    public Cita cambiarEstado(Long id, String nuevoEstado) {
         Cita cita = buscarPorId(id);
-        citaRepository.delete(cita);
-    }
 
-    private void validar(Cita cita, Long idActual) {
+        validarCitaModificable(cita);
 
-        if (cita == null ||
-                cita.getPaciente() == null ||
-                cita.getPaciente().isBlank() ||
-                cita.getFecha() == null ||
-                cita.getHora() == null ||
-                cita.getTratamiento() == null ||
-                cita.getTratamiento().getId() == null) {
-
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Faltan datos obligatorios"
-            );
-        }
-
-        if (cita.getEstado() == null ||
-                !List.of(
-                        "PROGRAMADA",
-                        "ATENDIDA",
-                        "CANCELADA"
-                ).contains(cita.getEstado())) {
-
+        if (!"ATENDIDA".equals(nuevoEstado)
+                && !"CANCELADA".equals(nuevoEstado)) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Estado no valido"
             );
         }
 
-        if (cita.getEstado().equals("CANCELADA")) {
-            return;
-        }
+        cita.setEstado(nuevoEstado);
 
+        return citaRepository.save(cita);
+    }
+
+    @Transactional
+    public void eliminar(Long id) {
+        Cita cita = buscarPorId(id);
+
+        validarCitaModificable(cita);
+
+        cita.setEstado("CANCELADA");
+        citaRepository.save(cita);
+    }
+
+    private Tratamiento buscarTratamiento(Long id) {
+        return tratamientoRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "Tratamiento no encontrado"
+                ));
+    }
+
+    private void validarCitaModificable(Cita cita) {
+        if (!"PROGRAMADA".equals(cita.getEstado())) {
+            throw new ResponseStatusException(
+                    HttpStatus.CONFLICT,
+                    "No se permiten cambios en citas atendidas o canceladas"
+            );
+        }
+    }
+
+    private void validarEstadoProgramado(String estado) {
+        if (!"PROGRAMADA".equals(estado)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Para registrar o actualizar una cita, el estado debe ser PROGRAMADA"
+            );
+        }
+    }
+
+    private void validarDatos(Cita cita) {
+        if (cita == null
+                || cita.getPaciente() == null
+                || cita.getPaciente().isBlank()
+                || cita.getFecha() == null
+                || cita.getHora() == null
+                || cita.getTratamiento() == null
+                || cita.getTratamiento().getId() == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Faltan datos obligatorios"
+            );
+        }
+    }
+
+    private void validarHorario(Cita cita, Long idActual) {
         boolean ocupada;
 
         if (idActual == null) {

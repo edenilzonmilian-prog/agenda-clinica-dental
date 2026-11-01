@@ -1,6 +1,7 @@
 package com.clinicadental.agenda.controlador;
 
 import com.clinicadental.agenda.dto.CitaDTO;
+import com.clinicadental.agenda.dto.EstadoCitaDTO;
 import com.clinicadental.agenda.modelo.Cita;
 import com.clinicadental.agenda.modelo.Tratamiento;
 import com.clinicadental.agenda.servicio.CitaServicio;
@@ -71,6 +72,15 @@ public class CitaControlador {
             @Valid @RequestBody CitaDTO datos) {
         Cita cita = convertirEntidad(datos);
         return convertirDTO(servicio.actualizar(id, cita));
+    }
+
+    @PatchMapping("/{id}/estado")
+    public CitaDTO cambiarEstado(
+            @PathVariable Long id,
+            @Valid @RequestBody EstadoCitaDTO datos) {
+        return convertirDTO(
+                servicio.cambiarEstado(id, datos.getEstado())
+        );
     }
 
     @DeleteMapping("/{id}")
