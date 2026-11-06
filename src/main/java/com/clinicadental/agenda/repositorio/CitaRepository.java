@@ -21,7 +21,7 @@ public interface CitaRepository extends JpaRepository<Cita, Long> {
 
     List<Cita> findByEstadoOrderByFechaAscHoraAsc(String estado);
 
-    @Query("SELECT SUM(c.tratamiento.precio) FROM Cita c WHERE c.estado = 'PROGRAMADA'")
+    @Query("SELECT SUM(c.precioAcordado) FROM Cita c WHERE c.estado = 'PROGRAMADA'")
     BigDecimal calcularTotalEstimadoProgramadas();
 
     boolean existsByFechaAndHoraAndEstadoNot(

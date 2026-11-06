@@ -1,161 +1,94 @@
 
-POST http://localhost:8080/api/pacientes
-Content-Type: application/json
-
-{
-  "nombre": "Juan Perez",
-  "telefono": "55551234",
-  "correo": "juan@example.com"
-}
-
-
-### PRUEBA 1 - Registrar tratamiento
-POST http://localhost:8080/api/tratamientos
-Content-Type: application/json
-
-{
-  "nombre": "Limpieza dental",
-  "descripcion": "Limpieza general y preventiva",
-  "precio": 250.00
-}
-
-### PRUEBA 2 - Consultar tratamientos
-GET http://localhost:8080/api/tratamientos
-
-
-### PRUEBA 3 - Registrar cita dental
-POST http://localhost:8080/api/citas
-Content-Type: application/json
-
-{
-  "paciente": "Juan Perez",
-  "fecha": "2026-11-05",
-  "hora": "11:30:00",
-  "tratamientoId": 1,
-  "observaciones": "Primera limpieza dental",
-  "estado": "PROGRAMADA"
-}
-
-### PRUEBA 4 - Consultar citas
-GET http://localhost:8080/api/citas
-
-### PRUEBA 5 - Verificar cruce de horario
-POST http://localhost:8080/api/citas
-Content-Type: application/json
-
-{
-  "paciente": "Maria Lopez",
-  "fecha": "2026-11-05",
-  "hora": "11:30:00",
-  "tratamientoId": 1,
-  "observaciones": "Horario ocupado",
-  "estado": "PROGRAMADA"
-}
-
-
-### Prueba - Consultar todas las citas
-GET http://localhost:8080/api/citas
-Accept: application/json
-
-
-### PRUEBA 6 - Consultar citas por fecha
-GET http://localhost:8080/api/citas/por-fecha?fecha=2026-10-23
-Accept: application/json
-
-
-### PRUEBA 7 - Consultar citas por tratamiento
-GET http://localhost:8080/api/citas/por-tratamiento/1
-Accept: application/json
+@baseUrl = http://localhost:8080
 
 ###
-GET http://localhost:8080/api/citas/pendientes
-Accept: application/json
+GET {{baseUrl}}/api/tratamientos
 
-### PRUEBA 8 - Total estimado
-GET http://localhost:8080/api/citas/total-estimado
-Accept: application/json
+###
+GET {{baseUrl}}/api/tratamientos/4
 
-### PRUEBA 9 - Cambiar estado de cita
-PUT http://localhost:8080/api/citas/2
+###
+GET {{baseUrl}}/api/citas
+
+###
+GET {{baseUrl}}/api/citas/11
+
+###
+GET {{baseUrl}}/api/citas/por-fecha?fecha=2026-11-20
+
+###
+GET {{baseUrl}}/api/citas/por-tratamiento/4
+
+###
+GET {{baseUrl}}/api/citas/pendientes
+
+###
+GET {{baseUrl}}/api/citas/total-estimado
+
+###
+POST {{baseUrl}}/api/citas
 Content-Type: application/json
 
 {
-  "paciente": "Juan Perez",
-  "fecha": "2026-11-05",
-  "hora": "11:30:00",
-  "tratamientoId": 1,
-  "observaciones": "Primera limpieza dental",
-  "estado": "ATENDIDA"
-}
-
-### PRUEBA 10 - Registrar cita con DTO
-POST http://localhost:8080/api/citas
-Content-Type: application/json
-
-{
-  "paciente": "Maria Lopez",
-  "fecha": "2026-11-06",
-  "hora": "09:00:00",
-  "tratamientoId": 1,
-  "observaciones": "Limpieza dental",
+  "paciente": "Paciente Prueba Uno",
+  "fecha": "2026-12-18",
+  "hora": "10:00:00",
+  "tratamientoId": 4,
+  "observaciones": "Prueba de registro",
   "estado": "PROGRAMADA"
 }
 
-### PRUEBA 11 - Actualizar cita con DTO
-PUT http://localhost:8080/api/citas/3
+###
+POST {{baseUrl}}/api/citas
 Content-Type: application/json
 
 {
-  "paciente": "Maria Lopez",
-  "fecha": "2026-11-06",
-  "hora": "09:00:00",
-  "tratamientoId": 1,
-  "observaciones": "Limpieza dental confirmada",
+  "paciente": "Paciente Prueba Dos",
+  "fecha": "2026-12-18",
+  "hora": "10:00:00",
+  "tratamientoId": 4,
+  "observaciones": "Horario duplicado",
   "estado": "PROGRAMADA"
 }
 
-### PRUEBA 12 - Validar datos obligatorios
-POST http://localhost:8080/api/citas
+###
+POST {{baseUrl}}/api/citas
+Content-Type: application/json
+
+{
+  "paciente": "Paciente Fecha Pasada",
+  "fecha": "2026-11-04",
+  "hora": "10:00:00",
+  "tratamientoId": 4,
+  "observaciones": "Fecha anterior",
+  "estado": "PROGRAMADA"
+}
+
+###
+POST {{baseUrl}}/api/citas
 Content-Type: application/json
 
 {
   "paciente": "",
-  "fecha": "2026-11-07",
-  "hora": "09:00:00",
-  "tratamientoId": 1,
-  "observaciones": "Prueba de validacion",
+  "fecha": "2026-12-19",
+  "hora": "10:00:00",
+  "tratamientoId": 4,
+  "observaciones": "Validacion de nombre",
   "estado": "PROGRAMADA"
 }
 
-### PRUEBA 13 - Cita no encontrada
-GET http://localhost:8080/api/citas/99999
-Accept: application/json
-
 ###
-PATCH http://localhost:8080/api/citas/10/estado
+POST {{baseUrl}}/api/citas
 Content-Type: application/json
 
 {
+  "paciente": "Paciente Estado Invalido",
+  "fecha": "2026-12-20",
+  "hora": "10:00:00",
+  "tratamientoId": 4,
+  "observaciones": "Validacion de estado",
   "estado": "PENDIENTE"
 }
 
 ###
-PATCH http://localhost:8080/api/citas/5/estado
-Content-Type: application/json
-
-{
-  "estado": "CANCELADA"
-}
-
-###
-PUT http://localhost:8080/api/citas/5
-Content-Type: application/json
-
-{
-  "paciente": "Leon Scott Kennedy",
-  "fecha": "2026-11-01",
-  "hora": "14:00:00",
-  "tratamientoId": 1,
-  "observaciones": "Intento de modificar cita atendida",
-  "estado": "PROGRAMADA"
-}
+GET {{baseUrl}}/api/citas/99999

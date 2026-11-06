@@ -12,67 +12,56 @@
 
 ## 1. Descripción del proyecto
 
-En este proyecto desarrollé una agenda para una clínica dental utilizando Java, Spring Boot, PostgreSQL, HTML, CSS y JavaScript; el sistema permite administrar tratamientos y citas dentales, registrar pacientes mediante su nombre, consultar los 
-horarios disponibles y llevar un control de las atenciones. Una de las funciones principales es evitar que se registren dos citas activas en la misma fecha y hora permitiendo cambiar el estado de las citas y conservar su información histórica.
+En este proyecto desarrollé una aplicación web para organizar los tratamientos y las citas de una clínica dental, con un sistema que permite registrar tratamientos,
+administrar citas, consultar los horarios y llevar un control de las atenciones realizadas, pero para evitar horarios duplicados se incorporó las validaciones, poder impedir 
+reservaciones en fechas pasadas y conservar el historial de las citas.
+
+Después de la evaluación final, realicé mejoras adicionales en la base de datos, las reglas del negocio y las pruebas automatizadas.
 
 ## 2. Objetivo
 
-Desarrollar una aplicación web conectada a una API REST que permita administrar los tratamientos y citas de una clínica dental, utilizando PostgreSQL para almacenar la información.
+Desarrollar una aplicación web utilizando Java, Spring Boot y PostgreSQL para administrar tratamientos y citas dentales mediante una API REST y una interfaz sencilla.
 
 ## 3. Tecnologías utilizadas
 
-- **Java:** desarrollo del backend.
-- **Spring Boot:** creación de la API REST.
-- **Spring Data JPA y Hibernate:** conexión y operaciones con PostgreSQL.
-- **Maven:** administración de dependencias.
-- **PostgreSQL:** almacenamiento de información.
-- **HTML:** estructura de la interfaz web.
-- **CSS:** diseño de la interfaz.
-- **JavaScript:** comunicación entre el frontend y la API.
-- **IntelliJ IDEA:** desarrollo y pruebas del proyecto.
-- **Postman:** pruebas de los endpoints.
-- **Git y GitHub:** control de versiones.
+- Java 21
+- Spring Boot
+- Spring Data JPA
+- Hibernate
+- Maven
+- PostgreSQL
+- HTML, CSS y JavaScript
+- JUnit 5
+- Mockito
+- Postman
+- IntelliJ IDEA
+- Git y GitHub
 
-## 4. Desarrollo del proyecto
+## 4. Organización del proyecto
 
-### Primer avance
-
-Durante el primer avance desarrollé la estructura inicial del proyecto, incluyendo las entidades, los controladores, servicios y repositorios. También establecí la conexión con PostgreSQL y las operaciones principales de tratamientos y citas.
-
-### Segundo avance
-
-En el segundo avance mejoré la validación de horarios mediante consultas directas al repositorio, así mismo implemente las consultas por fecha y tratamiento, la agenda pendiente y el cálculo del total estimado junto con el DTO, las validaciones de datos y un manejador 
-centralizado de excepciones para devolver mensajes comprensibles.
-
-### Entrega final
-
-Para la entrega final completé las correcciones indicadas por el ingeniero David Alvarez y desarrollé la interfaz utilizando HTML, CSS y JavaScript, separando la actualización de los datos de las citas de los cambios de estado,
-permitiendo marcar las citas como atendidas o canceladas mediante una operación independiente.
-
-También modifiqué la lógica para conservar el historial de las citas y evitar la eliminación de tratamientos que tengan citas relacionadas; Finalmente, conecté la interfaz con el backend y realicé pruebas utilizando el navegador, IntelliJ IDEA y Postman.
-
-## 5. Organización del proyecto
-
-El proyecto está organizado de la siguiente manera:
+El proyecto utiliza una arquitectura por capas:
 
 | Carpeta | Función |
 |---|---|
-| modelo | Entidades del sistema |
-| repositorio | Acceso a PostgreSQL |
-| servicio | Operaciones y reglas de negocio |
-| controlador | Endpoints de la API |
+| modelo | Entidades JPA |
+| repositorio | Consultas a PostgreSQL |
+| servicio | Reglas del negocio |
+| controlador | Endpoints REST |
 | dto | Transferencia y validación de datos |
-| exception | Manejo centralizado de errores |
-| resources/static | Archivos HTML, CSS y JavaScript |
+| exception | Manejo centralizado de excepciones |
+| resources/static | Interfaz web |
 | sql | Scripts de base de datos |
-| postman | Colección de solicitudes HTTP |
-| evidencias | Capturas y documentación de pruebas |
+| postman | Colección de solicitudes |
+| evidencias | Documentación y capturas |
+| src/test | Pruebas automatizadas |
 
-## 6. Entidades y relaciones
+## 5. Entidades y relaciones
+
+El sistema utiliza dos entidades principales.
 
 ### Tratamiento
 
-Contiene los campos:
+Campos:
 
 - id
 - nombre
@@ -81,64 +70,114 @@ Contiene los campos:
 
 ### Cita
 
-Contiene los campos:
+Campos:
 
 - id
 - paciente
 - fecha
 - hora
 - tratamiento
+- precioAcordado
 - observaciones
 - estado
 
-Los estados utilizados son `PROGRAMADA`, `ATENDIDA` y `CANCELADA`.
+Cada cita pertenece a un tratamiento mediante una relación `@ManyToOne`.
 
-Cada cita corresponde a un tratamiento mediante una relación `@ManyToOne`.
+El campo `paciente` almacena directamente el nombre de la persona que solicita la cita.
 
-También se conserva una entidad auxiliar Paciente. Sin embargo, las citas registran el nombre del paciente directamente, por lo que no existe una relación JPA entre ambas entidades.
+Los estados permitidos son:
 
-## 7. Reglas de negocio
+- PROGRAMADA
+- ATENDIDA
+- CANCELADA
 
-El sistema implementa las siguientes reglas:
+## 6. Funcionalidades
 
-1. No permite registrar dos citas activas con la misma fecha y hora.
-2. Cada cita debe tener un tratamiento registrado.
-3. Las citas nuevas se registran con estado `PROGRAMADA`.
-4. Las citas programadas pueden modificarse o cambiar de estado.
+El sistema permite registrar, consultar, actualizar y eliminar tratamientos cuando no tengan citas relacionadas 
+así como también permite registrar citas, actualizar su información, consultar la agenda y cambiar su estado.
+
+Incluye consultas por fecha, por tratamiento junto con una agenda de citas pendientes y un indicador que calcula el importe
+estimado de los tratamientos correspondientes a las citas programadas.
+
+## 7. Reglas del negocio
+
+1. No se permiten dos citas no canceladas con la misma fecha y hora.
+2. Las citas nuevas deben registrarse con estado PROGRAMADA.
+3. No se permite registrar ni reprogramar citas en fechas u horarios pasados.
+4. Cada cita debe tener un tratamiento existente.
 5. Las citas atendidas y canceladas no pueden modificarse.
-6. La cancelación conserva el historial de la cita.
-7. Los horarios de las citas canceladas pueden utilizarse nuevamente.
-8. No se permite eliminar un tratamiento que tenga citas relacionadas.
+6. Las citas canceladas conservan su historial.
+7. Una cita cancelada libera su horario.
+8. No se permite eliminar tratamientos que tengan citas relacionadas.
+9. Cada cita conserva el precio acordado al momento de su registro.
+10. Al cambiar el tratamiento de una cita programada, se asigna el precio del nuevo tratamiento.
 
-## 8. Base de datos
+## 8. Correcciones realizadas después de la evaluación final
 
+### Validación de fechas
+Se incorporó una validación que compara la fecha y hora de la cita con el momento actual y si una cita intenta registrarse o reprogramarse en el pasado,
+la API devuelve HTTP 400 con un mensaje comprensible.
+
+### Protección contra horarios duplicados
+Además de comprobar la disponibilidad desde el servicio, se creó un índice único parcial en PostgreSQL.
+El cual es `idx_citas_horario_activo` impidiendo que dos citas no canceladas ocupen el mismo horario.
+
+También se incorporó el manejo de errores de integridad para responder adecuadamente ante conflictos de unicidad.
+
+### Conservación del precio acordado
+Se agregó el campo `precio_acordado` a la tabla de citas.
+El indicador utiliza este precio guardado, evitando que los cambios posteriores en el catálogo modifiquen el importe de las citas existentes.
+
+### Simplificación del modelo de pacientes
+Se eliminó la entidad auxiliar Paciente y sus componentes independientes, conservando las dos entidades principales, Cita y Tratamiento, dejando
+citas para almacenar directamente los nombres
+
+### Pruebas automatizadas
+Se creó `CitaServicioTest.java` utilizando JUnit 5 y Mockito.
+
+## 9. Base de datos
 El proyecto utiliza PostgreSQL.
 
-**Base de datos principal:** `agenda_clinica_dental`
+Base de datos principal:
 
-La conexión está configurada en `application.properties`, utilizando el puerto 5432 y la variable de entorno `DB_PASSWORD`.
+`agenda_clinica_dental`
 
-Se incluyen los siguientes archivos:
+Archivos incluidos:
 
-- `sql/01_estructura.sql`: creación de las tablas.
-- `sql/02_datos_prueba.sql`: registros de prueba.
+- `sql/01_estructura.sql`
+- `sql/02_datos_prueba.sql`
 
-También se utilizó una base independiente llamada `agenda_clinica_dental_prueba` para comprobar los scripts SQL sin afectar la base principal, preparando los 4 tratamientos y las 10 citas de prueba.
+El primer archivo crea las tablas y el índice único de horarios.
 
-## 9. Instrucciones para ejecutar el proyecto
+El segundo contiene cuatro tratamientos y diez citas de ejemplo, incluyendo sus precios acordados.
 
-1. Descargar o clonar el repositorio.
+Los scripts están preparados para utilizarse al configurar una base de datos nueva. Los datos de prueba no deben insertarse repetidamente en una base que ya contiene registros.
+
+## 10. Configuración y ejecución
+Requisitos:
+
+- Java 21
+- Maven
+- PostgreSQL
+- IntelliJ IDEA o un entorno compatible
+
+Pasos:
+
+1. Clonar o descargar el repositorio.
 2. Abrir el proyecto en IntelliJ IDEA.
-3. Esperar a que Maven cargue las dependencias.
-4. Tener PostgreSQL instalado y funcionando.
-5. Crear la base de datos `agenda_clinica_dental`.
-6. Configurar la conexión y la variable `DB_PASSWORD`.
-7. Ejecutar `AgendaClinicaDentalApplication`.
-8. Abrir `http://localhost:8080/` desde el navegador.
+3. Configurar PostgreSQL.
+4. Crear la base de datos `agenda_clinica_dental`.
+5. Ejecutar los scripts SQL en una base de datos nueva.
+6. Configurar la variable de entorno `DB_PASSWORD` con la contraseña local de PostgreSQL.
+7. Esperar a que Maven cargue las dependencias.
+8. Ejecutar `AgendaClinicaDentalApplication`.
+9. Abrir `http://localhost:8080/` en el navegador.
 
-La aplicación utiliza el puerto 8080 y sirve el frontend desde Spring Boot, sin necesidad de iniciar otro servidor.
+El frontend está integrado con Spring Boot y no necesita un servidor adicional.
 
-## 10. Endpoints principales
+La contraseña de PostgreSQL no se almacena directamente en el repositorio.
+
+## 11. Endpoints REST
 
 ### Tratamientos
 
@@ -148,7 +187,7 @@ La aplicación utiliza el puerto 8080 y sirve el frontend desde Spring Boot, sin
 | GET | /api/tratamientos/{id} | Consultar tratamiento |
 | POST | /api/tratamientos | Registrar tratamiento |
 | PUT | /api/tratamientos/{id} | Actualizar tratamiento |
-| DELETE | /api/tratamientos/{id} | Eliminar tratamiento sin citas asociadas |
+| DELETE | /api/tratamientos/{id} | Eliminar tratamiento permitido |
 
 ### Citas
 
@@ -159,65 +198,73 @@ La aplicación utiliza el puerto 8080 y sirve el frontend desde Spring Boot, sin
 | POST | /api/citas | Registrar cita |
 | PUT | /api/citas/{id} | Actualizar cita programada |
 | PATCH | /api/citas/{id}/estado | Cambiar estado |
-| DELETE | /api/citas/{id} | Cancelar cita conservando su historial |
-| GET | /api/citas/por-fecha | Consultar citas por fecha |
-| GET | /api/citas/por-tratamiento/{id} | Consultar por tratamiento |
+| DELETE | /api/citas/{id} | Cancelar cita |
+| GET | /api/citas/por-fecha | Filtrar por fecha |
+| GET | /api/citas/por-tratamiento/{id} | Filtrar por tratamiento |
 | GET | /api/citas/pendientes | Consultar agenda pendiente |
-| GET | /api/citas/total-estimado | Calcular total estimado |
+| GET | /api/citas/total-estimado | Obtener total estimado |
 
-## 11. Interfaz web
+La API utiliza DTO para recibir y devolver los datos necesarios.
 
-Para la entrega final desarrollé una interfaz sencilla utilizando tres archivos:
+## 12. Frontend
+La interfaz se desarrolló utilizando HTML, CSS y JavaScript, esta queda integrada con Spring Boot mediante solicitudes HTTP,
+permitiendo administrar los tratamientos, registrar citas, consultar información, cambiar estados y utilizar filtros.
 
-- `index.html`: estructura de la página.
-- `styles.css`: diseño visual.
-- `app.js`: conexión con la API REST.
+## 13. Pruebas realizadas
+Se realizaron pruebas manuales utilizando IntelliJ IDEA, el archivo `pruebas.http`, el navegador y Postman.
 
-La interfaz permite registrar y modificar tratamientos, administrar citas, cambiar sus estados, consultar la agenda y filtrar por fecha o tratamiento.
+Entre las comprobaciones realizadas se encuentran:
 
-## 12. Pruebas realizadas
+- Consulta de tratamientos y citas.
+- Registro de citas.
+- Búsqueda por identificador.
+- Consultas por fecha y tratamiento.
+- Agenda pendiente.
+- Cálculo del total estimado.
+- Rechazo de horarios ocupados.
+- Rechazo de fechas pasadas.
+- Validación de campos obligatorios.
+- Validación de estados.
+- Respuesta ante registros inexistentes.
 
-Realicé pruebas utilizando el archivo `pruebas.http`, la interfaz web y Postman.
+### Resultados HTTP
 
-Entre los resultados comprobados se encuentran:
-
-| Prueba | Resultado |
+| Operación | Respuesta |
 |---|---|
-| Consultar tratamientos | 200 OK |
-| Registrar tratamientos | Correcto |
-| Actualizar tratamientos | Correcto |
-| Registrar citas | Correcto |
-| Actualizar citas programadas | Correcto |
-| Registrar una cita en horario ocupado | 409 Conflict |
-| Cancelar una cita | Correcto |
-| Reutilizar un horario cancelado | Correcto |
-| Marcar una cita como atendida | Correcto |
-| Consultar citas por fecha | Correcto |
-| Consultar citas por tratamiento | Correcto |
-| Consultar agenda pendiente | Correcto |
-| Calcular total estimado | Correcto |
-| Enviar un estado inválido | 400 Bad Request |
-| Cambiar el estado de una cita atendida | 409 Conflict |
-| Modificar una cita atendida | 409 Conflict |
-| Eliminar un tratamiento con citas | Operación rechazada |
+| Consulta correcta | 200 OK |
+| Registro correcto | 201 Created |
+| Datos inválidos | 400 Bad Request |
+| Cita inexistente | 404 Not Found |
+| Horario duplicado | 409 Conflict |
 
-Durante las pruebas de integración registré 4 tratamientos y 10 citas, mostrando un total estimado de **Q2,225.00**.
+Se ejecutaron 14 solicitudes HTTP de comprobación, obteniendo las respuestas esperadas.
 
-### Postman
+### Pruebas automatizadas
 
-La colección que contiene 22 solicitudes HTTP fue importada correctamente en Postman y se comprobó la consulta de tratamientos, obteniendo una respuesta `200 OK` y una prueba automática correcta.
+Se creó la clase `CitaServicioTest.java`.
 
-## 13. Evidencias
-Las evidencias permiten comprobar el funcionamiento del backend, la conexión con PostgreSQL, las validaciones y la integración con el frontend.
+Las ocho pruebas verifican:
 
-## 14. Control de versiones
+1. Rechazo de horarios ocupados.
+2. Rechazo de fechas pasadas.
+3. Registro del precio acordado.
+4. Conservación del precio histórico.
+5. Cambio de estado a ATENDIDA.
+6. Cambio de estado a CANCELADA.
+7. Bloqueo de modificación de una cita atendida.
+8. Bloqueo de cambio de estado de una cita cancelada.
 
-Utilicé Git y GitHub para guardar los avances del proyecto y registrar las modificaciones realizadas, manteniendo el desarrolloo en el mismo repositorio durante las diferentes entregas.
+Resultado obtenido:
 
-## 15. Conclusión
+**8 pruebas ejecutadas y 8 superadas.**
 
-Durante el desarrollo de este proyecto trabajé la API REST conectada a PostgreSQL y se organizaron las operaciones mediante controladores, servicios, repositorios y DTO, así como también apliqué las observaciones realizadas por el catedrático para mejorar las validaciones,
-el manejo de errores y las reglas de negocio. 
+### Verificación del indicador
+Se modificó temporalmente el precio del blanqueamiento dental de Q600.00 a Q750.00, haciendo que el total estimado de las citas existentes
+permaneciera en Q2,825.00, permitiendo comprobar que el indicador utiliza los precios acordados.
 
-En la entrega final completé la interfaz web y comprobé su integración con el backend, permitiendo administrar los tratamientos y las citas desde una misma página, considero que el proyecto me ayudó a comprender mejor cómo se conectan las diferentes partes de una aplicación y la 
-importancia de realizar pruebas antes de entregar un sistema.
+### Concurrencia
+La base de datos utiliza un índice único parcial para impedir registros no cancelados con la misma fecha y hora.
+La protección fue creada correctamente en PostgreSQL. La prueba de solicitudes verdaderamente simultáneas queda como comprobación de integración adicional.
+
+## 14. Colección Postman
+El repositorio incluye una colección de Postman con 22 solicitudes HTTP que cubren las operaciones principales del sistema.

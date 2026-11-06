@@ -1,7 +1,7 @@
-
 package com.clinicadental.agenda.modelo;
 
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -25,6 +25,9 @@ public class Cita {
     @ManyToOne
     @JoinColumn(name = "tratamiento_id", nullable = false)
     private Tratamiento tratamiento;
+
+    @Column(name = "precio_acordado", precision = 10, scale = 2)
+    private BigDecimal precioAcordado;
 
     private String observaciones;
 
@@ -74,6 +77,14 @@ public class Cita {
         this.tratamiento = tratamiento;
     }
 
+    public BigDecimal getPrecioAcordado() {
+        return precioAcordado;
+    }
+
+    public void setPrecioAcordado(BigDecimal precioAcordado) {
+        this.precioAcordado = precioAcordado;
+    }
+
     public String getObservaciones() {
         return observaciones;
     }
@@ -90,4 +101,3 @@ public class Cita {
         this.estado = estado;
     }
 }
-

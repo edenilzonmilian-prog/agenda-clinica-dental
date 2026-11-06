@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -59,14 +61,18 @@ public class CitaServicio {
     @Transactional
     public Cita guardar(Cita cita) {
         validarDatos(cita);
+        validarFechaFutura(cita);
         validarEstadoProgramado(cita.getEstado());
         validarHorario(cita, null);
 
+        Tratamiento tratamiento = buscarTratamiento(
+                cita.getTratamiento().getId()
+        );
+
         cita.setId(null);
         cita.setPaciente(cita.getPaciente().trim());
-        cita.setTratamiento(
-                buscarTratamiento(cita.getTratamiento().getId())
-        );
+        cita.setTratamiento(tratamiento);
+        cita.setPrecioAcordado(tratamiento.getPrecio());
 
         return citaRepository.save(cita);
     }
@@ -77,15 +83,23 @@ public class CitaServicio {
 
         validarCitaModificable(actual);
         validarDatos(datos);
+        validarFechaFutura(datos);
         validarEstadoProgramado(datos.getEstado());
         validarHorario(datos, id);
+
+        Tratamiento tratamiento = buscarTratamiento(
+                datos.getTratamiento().getId()
+        );
+
+        if (!actual.getTratamiento().getId().equals(tratamiento.getId())
+                || actual.getPrecioAcordado() == null) {
+            actual.setPrecioAcordado(tratamiento.getPrecio());
+        }
 
         actual.setPaciente(datos.getPaciente().trim());
         actual.setFecha(datos.getFecha());
         actual.setHora(datos.getHora());
-        actual.setTratamiento(
-                buscarTratamiento(datos.getTratamiento().getId())
-        );
+        actual.setTratamiento(tratamiento);
         actual.setObservaciones(datos.getObservaciones());
 
         return citaRepository.save(actual);
@@ -157,6 +171,24 @@ public class CitaServicio {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Faltan datos obligatorios"
+            );
+        }
+    }
+
+    private void validarFechaFutura(Cita cita) {
+        LocalDateTime fechaHoraCita = LocalDateTime.of(
+                cita.getFecha(),
+                cita.getHora()
+        );
+
+        LocalDateTime ahora = LocalDateTime.now(
+                ZoneId.of("America/Guatemala")
+        );
+
+        if (!fechaHoraCita.isAfter(ahora)) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "La fecha y hora de la cita deben ser posteriores al momento actual"
             );
         }
     }
